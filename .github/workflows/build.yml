@@ -1,0 +1,86 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+        cache: gradle
+    
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+    
+    - name: Build Debug APK (Universal)
+      run: ./gradlew assembleGenericDebug -PnoSplits
+      env:
+        ABI_FILTERS: arm64-v8a
+    
+    - name: List APK files
+      run: ls -la app/build/outputs/apk/generic/debug/
+    
+    - name: Upload Debug APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: seal-debug-universal
+        path: app/build/outputs/apk/generic/debug/*.apk
+        retention-days: 30
+        if-no-files-found: warn
+        overwrite: true
+    
+    - name: Create Release with APK
+      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v1.0.${{ github.run_number }}
+        name: Seal Downloader v1.0.${{ github.run_number }}
+        files: app/build/outputs/apk/generic/debug/*.apk
+        body: |
+          ## Seal - YouTube Downloader 📱
+          
+          **Optimized for Honor 8x (JSN-L22)**
+          
+          A beautiful Material You YouTube video downloader for Android.
+          
+          ### Features
+          - 📥 Download videos and audio from YouTube
+          - 🎨 Material You design with dynamic colors
+          - 🌙 Dark theme support
+          - 📂 Custom download directory
+          - 🔔 Background downloads with notifications
+          - 🎵 Audio extraction (MP3, M4A)
+          - 📹 Multiple quality options (360p to 4K)
+          - 🔗 Share YouTube links directly to app
+          
+          ### Honor/Huawei Specific Optimizations
+          - Battery optimization request on first launch
+          - Foreground service for reliable downloads
+          - EMUI compatibility improvements
+          
+          ### Installation
+          1. Download the APK
+          2. Enable "Install from unknown sources" in Settings
+          3. Install the APK (Android 7.0+ required)
+          4. Grant battery optimization exemption for best results
+          
+          ### Important for Honor 8x Users
+          1. After installing, go to Settings > Apps > Seal
+          2. Tap "Battery" and select "App launch"
+          3. Disable "Manage automatically"
+          4. Enable "Run in background"
+          5. This ensures downloads continue when screen is off
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
