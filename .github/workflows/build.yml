@@ -1,4 +1,4 @@
-name: Build APK
+name: Build magen download APK
 
 on:
   push:
@@ -35,7 +35,7 @@ jobs:
     - name: Upload Debug APK
       uses: actions/upload-artifact@v4
       with:
-        name: seal-debug-universal
+        name: magen-download-debug-universal
         path: app/build/outputs/apk/generic/debug/*.apk
         retention-days: 30
         if-no-files-found: warn
@@ -46,17 +46,17 @@ jobs:
       uses: softprops/action-gh-release@v2
       with:
         tag_name: v1.0.${{ github.run_number }}
-        name: Seal Downloader v1.0.${{ github.run_number }}
+        name: magen download v1.0.${{ github.run_number }}
         files: app/build/outputs/apk/generic/debug/*.apk
         body: |
-          ## Seal - YouTube Downloader 📱
+          ## magen download - Video Downloader 📱
           
           **Optimized for Honor 8x (JSN-L22)**
           
-          A beautiful Material You YouTube video downloader for Android.
+          A beautiful Material You video downloader for Android, supporting YouTube, Facebook, and TikTok.
           
           ### Features
-          - 📥 Download videos and audio from YouTube
+          - 📥 Download videos and audio from YouTube, Facebook, and TikTok
           - 🎨 Material You design with dynamic colors
           - 🌙 Dark theme support
           - 📂 Custom download directory
