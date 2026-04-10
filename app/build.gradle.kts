@@ -139,7 +139,7 @@ android {
     applicationVariants.all {
         outputs.all {
             (this as com.android.build.gradle.internal.api.BaseVariantOutputImpl).outputFileName =
-                "Seal-${defaultConfig.versionName}-${name}.apk"
+                "magen-download-${defaultConfig.versionName}-${name}.apk"
         }
     }
 
